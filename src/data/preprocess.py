@@ -1,14 +1,14 @@
 import numpy as np
 from PIL import Image
 import logging
-#from tensorflow.keras.preprocessing.image import ImageDataGenerator, DirectoryIterator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, DirectoryIterator
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def load_and_preprocess_image(img_path: str, target_size=(32, 32)) -> np.ndarray:
+def load_and_preprocess_image(img_path: str, target_size=(224, 224)) -> np.ndarray:
     """
     Loads and preprocess a single image
 
@@ -76,7 +76,7 @@ def prepare_datasets(
 
     train_gen = train_datagen.flow_from_directory(
         train_dir,
-        target_size=(32, 32),
+        target_size=(224, 224),
         batch_size=32,
         class_mode="categorical",
         subset="training",
@@ -84,7 +84,7 @@ def prepare_datasets(
 
     val_gen = train_datagen.flow_from_directory(
         train_dir,
-        target_size=(32, 32),
+        target_size=(224, 224),
         batch_size=32,
         class_mode="categorical",
         subset="validation",
@@ -92,7 +92,7 @@ def prepare_datasets(
 
     test_gen = test_datagen.flow_from_directory(
         test_dir,
-        target_size=(32, 32),
+        target_size=(224, 224),
         batch_size=32,
         class_mode="categorical",
         shuffle=False,
