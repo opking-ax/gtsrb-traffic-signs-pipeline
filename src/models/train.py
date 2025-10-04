@@ -10,7 +10,6 @@ from tensorflow.keras.layers import (
     Dropout,
     BatchNormalization,
     GlobalAveragePooling2D,
-    ReLU,
     Input,
 )
 from tensorflow.keras.applications import ResNet50
@@ -44,16 +43,14 @@ def build_cnn_model(input_shape: tuple[int, int, int] = (224, 224, 3), num_class
     """
     model = Sequential(
         [
-            Conv2D(32, (3, 3), activation="relu", input_shape=input_shape),
+            Input(shape=input_shape),
+            Conv2D(32, (3, 3), activation="relu", padding="same"),
             MaxPooling2D(2, 2),
-            Conv2D(64, (3, 3), activation="relu"),
+            Conv2D(64, (3, 3), activation="relu", padding="same"),
             MaxPooling2D(2, 2),
-            Conv2D(128, (3, 3), activation="relu"),
+            Conv2D(128, (3, 3), activation="relu", padding="same"),
             MaxPooling2D(2, 2),
-            Conv2D(256, (3, 3), activation="relu"),
-            BatchNormalization(),
-            MaxPooling2D(2, 2),
-            Conv2D(512, (3, 3), activation="relu"),
+            Conv2D(256, (3, 3), activation="relu", padding="same"),
             BatchNormalization(),
             MaxPooling2D(2, 2),
             Flatten(),
@@ -61,7 +58,7 @@ def build_cnn_model(input_shape: tuple[int, int, int] = (224, 224, 3), num_class
             Dropout(0.5),
             Dense(
                 num_classes, activation="softmax"
-            ),  # 43 because it the number of classes for current project
+            ),
         ]
     )
     return model
@@ -111,10 +108,6 @@ def train_and_evaluate(model, train_data, val_data, test_data, config: dict):
     Returns:
         History and the evaluated metrics
     """
-    X_train, y_train = train_data
-    X_val, y_val = val_data
-    X_test, y_test = test_data
-
     epochs = config["epochs"]
     batch_size = config["batch_size"]
 
@@ -123,13 +116,12 @@ def train_and_evaluate(model, train_data, val_data, test_data, config: dict):
     )
 
     history = model.fit(
-        X_train,
-        y_train,
-        validation_data=(X_val, y_val),
+        train_data,
+        validation_data=(val_data),
         epochs=epochs,
         batch_size=batch_size,
     )
-    evaluate_metrics = model.evaluate(X_test, y_test)
+    evaluate_metrics = model.evaluate(test_data)
 
     #save_dir = "../models"
     #os.makedirs(save_dir, exist_ok=True)
