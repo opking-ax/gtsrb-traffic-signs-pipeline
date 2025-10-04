@@ -1,3 +1,4 @@
 img_size: [224, 224]
-batch_size: 32
-epochs: 10
+batch_size: 8
+epochs: 5
+model_name: cnn
